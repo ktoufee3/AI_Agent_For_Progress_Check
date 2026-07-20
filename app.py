@@ -1,11 +1,32 @@
 #app.py
 from agent.agent import Agent
 
-agent = Agent()
 
-question = input("You: ")
+def main():
 
-answer = agent.run(question)
+    agent = Agent()
 
-print("\nAgent:")
-print(answer)
+    print("SMS Project AI Agent")
+    print("Type 'exit' to quit.\n")
+
+    while True:
+
+        question = input("You: ").strip()
+
+        if question.lower() in ("exit", "quit"):
+            print("Goodbye!")
+            break
+
+        try:
+            answer = agent.run(question)
+
+            print("\nAssistant:")
+            print(answer)
+            print()
+
+        except Exception as e:
+            print(f"\nError: {e}\n")
+
+
+if __name__ == "__main__":
+    main()

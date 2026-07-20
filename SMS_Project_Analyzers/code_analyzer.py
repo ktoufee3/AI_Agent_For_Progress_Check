@@ -1,46 +1,60 @@
-#SMS_Project_Analyzers/code_analyzer.py
-from pathlib import Path
+# #SMS_Project_Analyzers/code_analyzer.py
+import subprocess
 
 from config import SMS_PROJECT_PATH
+from SMS_Project_Analyzers.file_reader import FileReader
 
 
 class CodeAnalyzer:
 
-    def analyze(self, changed_files):
+    def analyze(self):
 
-        project_path = Path(SMS_PROJECT_PATH)
+        changed_files = self.get_changed_files()
 
-        if not project_path.exists():
-            return {
-                "success": False,
-                "error": f"Project path not found: {project_path}"
-            }
-
-        analyzed_files = []
-
-        for file in changed_files:
-
-            full_path = project_path / file
-
-            if not full_path.exists():
-                continue
-
-            try:
-                with open(full_path, "r", encoding="utf-8") as f:
-                    content = f.read()
-
-                analyzed_files.append({
-                    "path": file,
-                    "content": content
-                })
-
-            except Exception as e:
-                analyzed_files.append({
-                    "path": file,
-                    "error": str(e)
-                })
+        files = FileReader().read_files(changed_files)
 
         return {
             "success": True,
-            "files": analyzed_files
+            "files": files
         }
+
+    def get_changed_files(self):
+
+        try:
+
+            result = subprocess.run(
+                [
+                    "git",
+                    "-C",
+                    SMS_PROJECT_PATH,
+                    "status",
+                    "--porcelain"
+                ],
+                capture_output=True,
+                text=True,
+                check=True
+            )
+
+            changed_files = []
+
+            for line in result.stdout.splitlines():
+
+                if not line.strip():
+                    continue
+
+                # M  myapp/models.py
+                # A  README.md
+                # ?? new_file.py
+
+                changed_files.append(line[3:].strip())
+
+            return changed_files
+
+        except subprocess.CalledProcessError:
+
+            return []
+
+
+if __name__ == "__main__":
+
+    print(CodeAnalyzer().analyze())

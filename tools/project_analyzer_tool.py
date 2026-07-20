@@ -1,12 +1,11 @@
 #tools/project_analyzer_tool.py
-from SMS_Project_Analyzers.code_analyzer import CodeAnalyzer
+from SMS_Project_Analyzers.super_code_analyzer import SuperCodeAnalyzer
+from tools.base_tool import BaseTool
+from SMS_Project_Analyzers.llm_code_analyzer import LLMCodeAnalyzer
+
+from SMS_Project_Analyzers.super_code_analyzer import SuperCodeAnalyzer
 from tools.base_tool import BaseTool
 
-changed_files = [
-    "myapp/models.py",
-    "myapp/views.py",
-    "README.md"
-]
 
 class ProjectAnalyzerTool(BaseTool):
 
@@ -16,10 +15,21 @@ class ProjectAnalyzerTool(BaseTool):
 
     parameters = {}
 
+
     def execute(self):
 
-        analyzer = CodeAnalyzer()
+        project_id = 1
 
-        result = analyzer.analyze(changed_files)
+        analyzer = SuperCodeAnalyzer()
+
+        result = analyzer.analyze(
+            project_id
+        )
 
         return result
+    
+if __name__ == "__main__":
+
+    result = ProjectAnalyzerTool().execute()
+
+    print(result)

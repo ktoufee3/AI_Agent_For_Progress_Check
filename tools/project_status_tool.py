@@ -41,7 +41,6 @@ class ProjectStatusTool(BaseTool):
                 SELECT
                     id,
                     project_name,
-                    description,
                     overall_progress,
                     current_phase,
                     status

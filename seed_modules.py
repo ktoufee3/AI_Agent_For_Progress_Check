@@ -1,4 +1,3 @@
-#seed_modules.py
 import psycopg2
 import config
 
@@ -12,7 +11,63 @@ conn = psycopg2.connect(
 
 cur = conn.cursor()
 
-project_id = 2
+# --------------------------------------------------
+# Project
+# --------------------------------------------------
+
+cur.execute("""
+    INSERT INTO projects
+    (
+        project_name,
+        overall_progress,
+        current_phase,
+        status
+    )
+    VALUES
+    (
+        %s,
+        %s,
+        %s,
+        %s
+    )
+    RETURNING id
+""", (
+    "Student Management System",
+    0,
+    "Project Setup",
+    "In Progress"
+))
+
+project_id = cur.fetchone()[0]
+
+print(f"Project ID: {project_id}")
+
+# --------------------------------------------------
+# Git Status
+# --------------------------------------------------
+
+cur.execute("""
+    INSERT INTO project_git_status
+    (
+        project_id,
+        branch,
+        last_processed_commit
+    )
+    VALUES
+    (
+        %s,
+        %s,
+        %s
+    )
+""", (
+    project_id,
+    "master",
+    None
+))
+
+# --------------------------------------------------
+# Modules
+# --------------------------------------------------
 
 modules = [
     "Project Setup",
@@ -33,14 +88,21 @@ for module in modules:
             module_name,
             status
         )
-        VALUES (%s, %s, 'Not Started')
-        ON CONFLICT (project_id, module_name) DO NOTHING
-    """, (project_id, module))
+        VALUES
+        (
+            %s,
+            %s,
+            %s
+        )
+    """, (
+        project_id,
+        module,
+        "Not Started"
+    ))
 
 conn.commit()
 
 cur.close()
 conn.close()
 
-print("Modules inserted successfully.")
-
+print("Database seeded successfully.")

@@ -1,8 +1,26 @@
-from SMS_Project_Analyzers.git_analyzer import GitAnalyzer
+from database.project_analysis_updater import ProjectAnalysisUpdater
 
 
-analyzer = GitAnalyzer()
+analysis = {
+    "modules": [
+        {
+            "module_name": "Student Management",
+            "changes": [
+                "Added Student model"
+            ],
+            "status": "in_progress",
+            "progress": 10
+        }
+    ]
+}
 
-result = analyzer.get_changed_files()
+
+
+result = ProjectAnalysisUpdater().update(
+    project_id=1,
+    analysis=analysis,
+    commit_hash="3759d243b92201d159a39fd83818865f8086b6f3"
+)
+
 
 print(result)
