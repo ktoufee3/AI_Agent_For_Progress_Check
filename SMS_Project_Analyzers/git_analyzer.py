@@ -65,13 +65,16 @@ class GitAnalyzer:
                 return {
                     "success": True,
                     "latest_commit": latest_commit,
+                    "commits" : [],
                     "files": []
                 }
 
             if last_processed_commit == latest_commit:
                 return {
                     "success": True,
+                    "branch" : branch,
                     "latest_commit": latest_commit,
+                    "commits" : [],
                     "files": []
                 }
 
@@ -83,11 +86,18 @@ class GitAnalyzer:
 
             files = FileReader.read_files(changed_files)
 
+            commits = self.get_commits(
+                project_path,
+                last_processed_commit,
+                latest_commit
+            )
+
             return {
                 "success": True,
-                "initialzed" : True,
+                "branch" : branch,
                 "latest_commit": latest_commit,
-                "files" : files,
+                "commits": commits,
+                "files": files,
             }
 
         except subprocess.CalledProcessError as e:
@@ -99,6 +109,10 @@ class GitAnalyzer:
         
 
     def get_changed_files(self, project_path, old_commit, new_commit):
+
+        """
+        Return a list of files changed between two commits.
+        """
 
         result = subprocess.run(
             [
@@ -123,4 +137,51 @@ class GitAnalyzer:
                 changed_files.append(line.strip())
 
         return changed_files
+
+    def get_commits(self, project_path, old_commit, new_commit):
+        """
+        Return commit metadata between two commits.
+        """
+
+        result = subprocess.run(
+            [
+                "git",
+                "-C",
+                str(project_path),
+                "log",
+                "--pretty=format:%H|%an|%aI|%s",
+                f"{old_commit}..{new_commit}"
+            ],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+
+        commits = []
+
+        for line in result.stdout.splitlines():
+
+            if not line.strip():
+                continue
+
+            parts = line.split("|", 3)
+
+            if len(parts) != 4:
+                continue
+
+            commit_hash, author, commit_date, commit_message = parts
+
+            commits.append(
+                {
+                    "commit_hash": commit_hash,
+                    "author": author,
+                    "commit_date": commit_date,
+                    "commit_message": commit_message
+                }
+            )
+
+        return commits
+
+
+
 

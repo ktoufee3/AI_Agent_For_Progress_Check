@@ -5,6 +5,7 @@ load_dotenv()
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
+RETRY_GROQ_API_KEY = os.getenv("RETRY_GROQ_API_KEY")
 
 #personal laptop
 db_name= os.getenv("db_name")
@@ -18,6 +19,13 @@ db_password= os.getenv("db_password")
 # Database connection URL (alternative format)
 DATABASE_URL = f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
 
+
+#API
+API_IP=os.getenv("API_IP")
+API_PORT=int(os.getenv("API_PORT"))
+
+# Path to conversation_memory.json
+CONVERSATION_MEMORY_FILE = "memory/conversation_memory.json"
 
 # Path to the Django Student Management System project
 # SMS_PROJECT_PATH = r"F:\BecomeDataScientist\Student_Management_System"

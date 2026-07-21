@@ -1,7 +1,7 @@
 import json
 
 
-def build_responder_prompt(user_question, tool_result):
+def build_responder_prompt(user_question, history, tool_result):
     return f"""
 You are an AI Assistant.
 

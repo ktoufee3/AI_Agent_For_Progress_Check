@@ -1,4 +1,4 @@
-def build_planner_prompt(user_question, available_tools):
+def build_planner_prompt(user_question, history, available_tools):
     return f"""
 You are an AI Agent Planner.
 

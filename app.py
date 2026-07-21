@@ -1,6 +1,7 @@
 #app.py
 from agent.agent import Agent
-
+import uvicorn
+import config
 
 def main():
 
@@ -28,5 +29,13 @@ def main():
             print(f"\nError: {e}\n")
 
 
+
 if __name__ == "__main__":
-    main()
+    # main()
+
+    uvicorn.run(
+        "api.app:app",
+        host=config.API_IP,
+        port=config.API_PORT,
+        reload=True
+    )

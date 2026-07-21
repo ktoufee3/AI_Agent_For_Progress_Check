@@ -12,19 +12,14 @@ conn = psycopg2.connect(
 cur = conn.cursor()
 
 cur.execute("""
-INSERT INTO projects (
-    project_name,
-    description,
-    overall_progress,
-    current_phase,
-    status
-)
-VALUES (
-    'Student Management System',
-    'AI-powered Student Management System built with Django REST Framework',
-    35,
-    'Attendance Module',
-    'In Progress'
+CREATE TABLE project_commits (
+    id SERIAL PRIMARY KEY,
+    project_id INT,
+    commit_hash TEXT UNIQUE,
+    author TEXT,
+    commit_message TEXT,
+    commit_date TIMESTAMP,
+    created_at TIMESTAMP DEFAULT NOW()
 );
 """)
 
