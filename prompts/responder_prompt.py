@@ -8,7 +8,11 @@ You are an AI Assistant.
 Answer the user's question using ONLY the tool output below.
 
 Tool Output:
-{json.dumps(tool_result, indent=4)}
+{json.dumps(
+    tool_result,
+    indent=4,
+    default=str
+)}
 
 User Question:
 {user_question}

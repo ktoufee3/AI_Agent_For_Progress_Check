@@ -48,7 +48,11 @@ User Question:
 {user_question}
 
 Project Data:
-{json.dumps(tool_result, indent=4)}
+{json.dumps(
+    tool_result,
+    indent=4,
+    default=str
+)}
 
 Analyze the project.
 

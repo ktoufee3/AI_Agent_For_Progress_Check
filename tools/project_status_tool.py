@@ -1,7 +1,9 @@
 #tools/project_status_tool.py
-from psycopg2.extras import RealDictCursor
-
-from database.db_manager import get_connection
+from database.db_utils import (
+    calculate_overall_progress,
+    get_project,
+    get_project_modules,
+)
 from tools.base_tool import BaseTool
 
 
@@ -11,97 +13,43 @@ class ProjectStatusTool(BaseTool):
 
     description = "Provides the current status of a project."
 
-    # parameters = {
-    #     "project_id": "integer"
-    # }
-
     parameters = {}
 
     def execute(self):
 
-        conn = get_connection()
+        project = get_project()
 
-        try:
-            # RealDictCursor returns rows as dictionaries instead of tuples.
-            cur = conn.cursor(cursor_factory=RealDictCursor)
+        if project is None:
+            return {
+                "success": False,
+                "error": "Project not found."
+            }
 
+        modules = get_project_modules(project["id"])
 
-            # cur.execute("""
-            #     SELECT
-            #         project_name,
-            #         description,
-            #         overall_progress,
-            #         current_phase,
-            #         status
-            #     FROM projects
-            #     WHERE id = %s
-            # """, (project_id,))
+        project["overall_progress"] = calculate_overall_progress(modules)
 
-            cur.execute("""
-                SELECT
-                    id,
-                    project_name,
-                    overall_progress,
-                    current_phase,
-                    status
-                FROM projects
-                ORDER BY id DESC
-                LIMIT 1
-            """)
+        project["created_at"] = (
+            project["created_at"].isoformat()
+            if project["created_at"] else None
+        )
 
-
-
-            project = cur.fetchone()
-
-            if project is None:
-                return {
-                        "success": False,
-                        "error": "Project not found."
-                    }
-
-            project_id = project["id"]
-
-            cur.execute("""
-                SELECT
-                    module_name,
-                    status,
-                    progress
-                FROM project_modules
-                WHERE project_id = %s
-            """, (project_id,))
-
-            modules = cur.fetchall()
-
-            cur.execute("""
-                SELECT
-                    milestone_name,
-                    status
-                FROM project_milestones
-                WHERE project_id = %s
-            """, (project_id,))
-
-            milestones = cur.fetchall()
-
-        finally:
-            if cur:
-                cur.close()
-            if conn:
-                conn.close()
-
-
-        # Convert RealDictRow objects to normal Python dictionaries
-        project = dict(project)
-        modules = [dict(module) for module in modules]
-        milestones = [dict(milestone) for milestone in milestones]
+        project["updated_at"] = (
+            project["updated_at"].isoformat()
+            if project["updated_at"] else None
+        )
 
         return {
-                "success": True,
-                "data": {
-                    "project_info": project,
-                    "modules": modules,
-                    "milestones": milestones
-                }
+            "success": True,
+            "data": {
+                "project_info": project,
+                "modules": modules
             }
+        }
+
+
+
+
 
 
 

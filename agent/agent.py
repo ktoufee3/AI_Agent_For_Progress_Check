@@ -39,6 +39,11 @@ class Agent:
         # Planning
         # ----------------------------
 
+        print("\nAvailable Tools:")
+        print(self.available_tools)
+        # for tool in available_tools:
+        #     print(tool)
+
         plan = self.planner.plan(
                 user_question,
                 history,

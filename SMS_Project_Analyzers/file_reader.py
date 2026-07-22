@@ -11,13 +11,13 @@ from config import (
 class FileReader:
 
     @staticmethod
-    def read_files(files):
+    def read_files(paths):
 
         project_path = Path(SMS_PROJECT_PATH)
 
         analyzed_files = []
 
-        for file in files:
+        for file in paths:
 
             path = Path(file)
 

@@ -9,10 +9,9 @@ def inspect_schema():
 
         # List all tables
         cur.execute("""
-            SELECT table_name 
-            FROM information_schema.tables 
-            WHERE table_schema = 'public'
-            ORDER BY table_name;
+            SELECT tablename
+            FROM pg_tables
+            WHERE schemaname = 'public';
         """)
         
         tables = cur.fetchall()
@@ -74,6 +73,33 @@ def inspect_schema():
         import traceback
         traceback.print_exc()
 
+
+def check_data_in_table():
+    conn = get_connection()
+
+    cur = conn.cursor()
+
+    try:
+        cur.execute("""
+        SELECT *
+        FROM project_git_status;
+        """)
+
+        columns_data = cur.fetchall()
+
+        print(columns_data)
+
+    except Exception as e:
+        pass
+
+    finally:
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
+
 if __name__ == "__main__":
-    inspect_schema()
+    # inspect_schema()
+
+    check_data_in_table()
 

@@ -1,108 +1,123 @@
-import psycopg2
-import config
+# database/seed_database.py
 
-conn = psycopg2.connect(
-    host=config.db_host,
-    port=config.db_port,
-    database=config.db_name,
-    user=config.db_user,
-    password=config.db_password
-)
+from database.db_manager import get_connection
 
-cur = conn.cursor()
 
-# --------------------------------------------------
-# Project
-# --------------------------------------------------
+def seed():
 
-cur.execute("""
-    INSERT INTO projects
-    (
-        project_name,
-        overall_progress,
-        current_phase,
-        status
-    )
-    VALUES
-    (
-        %s,
-        %s,
-        %s,
-        %s
-    )
-    RETURNING id
-""", (
-    "Student Management System",
-    0,
-    "Project Setup",
-    "In Progress"
-))
+    conn = get_connection()
+    cur = conn.cursor()
 
-project_id = cur.fetchone()[0]
+    try:
 
-print(f"Project ID: {project_id}")
+        # -----------------------------------------------------
+        # Project
+        # -----------------------------------------------------
 
-# --------------------------------------------------
-# Git Status
-# --------------------------------------------------
-
-cur.execute("""
-    INSERT INTO project_git_status
-    (
-        project_id,
-        branch,
-        last_processed_commit
-    )
-    VALUES
-    (
-        %s,
-        %s,
-        %s
-    )
-""", (
-    project_id,
-    "master",
-    None
-))
-
-# --------------------------------------------------
-# Modules
-# --------------------------------------------------
-
-modules = [
-    "Project Setup",
-    "Authentication",
-    "Student Management",
-    "Teacher Management",
-    "Attendance",
-    "Fees",
-    "Results"
-]
-
-for module in modules:
-
-    cur.execute("""
-        INSERT INTO project_modules
-        (
-            project_id,
-            module_name,
-            status
+        cur.execute(
+            """
+            INSERT INTO projects
+            (
+                project_name,
+                description,
+                repository_url
+            )
+            VALUES
+            (
+                %s,
+                %s,
+                %s
+            )
+            RETURNING id;
+            """,
+            (
+                "Student Management System",
+                "AI-powered Student Management System built with Django REST Framework.",
+                "https://github.com/ktoufee3/AI_Agent_For_Progress_Check.git"
+            )
         )
-        VALUES
-        (
-            %s,
-            %s,
-            %s
+
+        project_id = cur.fetchone()[0]
+
+        # -----------------------------------------------------
+        # Modules
+        # -----------------------------------------------------
+
+        modules = [
+            "Project Setup",
+            "Authentication",
+            "Student Management",
+            "Teacher Management",
+            "Course Management",
+            "Attendance",
+            "Examinations",
+            "Fee Management",
+            "Notifications",
+            "Reports",
+            "REST API",
+            "AI Progress Checker"
+        ]
+
+        for module in modules:
+
+            cur.execute(
+                """
+                INSERT INTO project_modules
+                (
+                    project_id,
+                    module_name
+                )
+                VALUES
+                (
+                    %s,
+                    %s
+                );
+                """,
+                (
+                    project_id,
+                    module
+                )
+            )
+
+        # -----------------------------------------------------
+        # Git Status
+        # -----------------------------------------------------
+
+        cur.execute(
+            """
+            INSERT INTO project_git_status
+            (
+                project_id,
+                branch,
+                last_processed_commit
+            )
+            VALUES
+            (
+                %s,
+                %s,
+                NULL
+            );
+            """,
+            (
+                project_id,
+                "master"
+            )
         )
-    """, (
-        project_id,
-        module,
-        "Not Started"
-    ))
 
-conn.commit()
+        conn.commit()
 
-cur.close()
-conn.close()
+        print("Database seeded successfully.")
 
-print("Database seeded successfully.")
+    except Exception as e:
+
+        conn.rollback()
+        raise e
+
+    finally:
+
+        cur.close()
+        conn.close()
+
+
+if __name__ == "__main__":
+    seed()

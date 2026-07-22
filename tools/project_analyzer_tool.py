@@ -1,11 +1,7 @@
 #tools/project_analyzer_tool.py
 from SMS_Project_Analyzers.super_code_analyzer import SuperCodeAnalyzer
 from tools.base_tool import BaseTool
-from SMS_Project_Analyzers.llm_code_analyzer import LLMCodeAnalyzer
-
-from SMS_Project_Analyzers.super_code_analyzer import SuperCodeAnalyzer
-from tools.base_tool import BaseTool
-
+from tools.project_status_tool import ProjectStatusTool
 
 class ProjectAnalyzerTool(BaseTool):
 
@@ -16,17 +12,23 @@ class ProjectAnalyzerTool(BaseTool):
     parameters = {}
 
 
-    def execute(self):
+    def execute(self, project_id=1):
 
-        project_id = 1
+        print("Starting project analysis...")
 
         analyzer = SuperCodeAnalyzer()
 
-        result = analyzer.analyze(
-            project_id
-        )
+        result = analyzer.analyze(project_id)
 
-        return result
+        print("Analyzer result:")
+        print(result)
+
+        if not result["success"]:
+            return result
+
+        print("Returning updated status...")
+
+        return ProjectStatusTool().execute()
     
 if __name__ == "__main__":
 

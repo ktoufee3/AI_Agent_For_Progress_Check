@@ -1,12 +1,10 @@
+#setup_database
 import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
 import config
 
-
-DB_NAME = "sms_progress_checker"
-
-
+DB_NAME = config.db_name
 def create_database():
 
     conn = psycopg2.connect(
@@ -33,6 +31,139 @@ def create_database():
     conn.close()
 
 
+# def create_tables():
+
+#     conn = psycopg2.connect(
+#         host=config.db_host,
+#         port=config.db_port,
+#         database=DB_NAME,
+#         user=config.db_user,
+#         password=config.db_password
+#     )
+
+#     cur = conn.cursor()
+
+#     # ---------------------------------------------------------
+#     # projects
+#     # ---------------------------------------------------------
+
+#     cur.execute("""
+#         CREATE TABLE projects
+#         (
+#             id SERIAL PRIMARY KEY,
+
+#             project_name VARCHAR(255) NOT NULL,
+
+#             description TEXT,
+
+#             repository_url TEXT,
+
+#             default_branch VARCHAR(100) DEFAULT 'main',
+
+#             overall_progress NUMERIC(5,2) DEFAULT 0,
+
+#             created_at TIMESTAMP DEFAULT NOW(),
+
+#             updated_at TIMESTAMP DEFAULT NOW()
+#         );
+#     """)
+
+#     # ---------------------------------------------------------
+#     # project_modules
+#     # ---------------------------------------------------------
+
+#     cur.execute("""
+#         CREATE TABLE project_modules
+#         (
+#             id SERIAL PRIMARY KEY,
+
+#             project_id INTEGER NOT NULL
+#                 REFERENCES projects(id)
+#                 ON DELETE CASCADE,
+
+#             module_name VARCHAR(255) NOT NULL,
+
+#             description TEXT,
+
+#             progress NUMERIC(5,2) DEFAULT 0,
+
+#             status VARCHAR(50) DEFAULT 'Not Started',
+
+#             started_at TIMESTAMP,
+
+#             completed_at TIMESTAMP,
+
+#             updated_at TIMESTAMP DEFAULT NOW(),
+
+#             CONSTRAINT unique_project_module
+#                 UNIQUE(project_id, module_name)
+#         );
+#     """)
+
+
+#     # ---------------------------------------------------------
+#     # project_git_status
+#     # ---------------------------------------------------------
+
+#     cur.execute("""
+#         CREATE TABLE project_git_status
+#         (
+#             project_id INTEGER PRIMARY KEY
+#                 REFERENCES projects(id)
+#                 ON DELETE CASCADE,
+
+#             last_processed_commit VARCHAR(40),
+
+#             last_checked_at TIMESTAMP,
+
+#             updated_at TIMESTAMP DEFAULT NOW()
+#         );
+#     """)
+
+#     # project_commits
+#     cur.execute("""
+#         CREATE TABLE project_commits
+#         (
+#             id SERIAL PRIMARY KEY,
+
+#             project_id INTEGER NOT NULL
+#                 REFERENCES projects(id)
+#                 ON DELETE CASCADE,
+
+#             commit_hash VARCHAR(40) NOT NULL UNIQUE,
+
+#             author VARCHAR(255),
+
+#             commit_message TEXT,
+
+#             commit_date TIMESTAMP,
+
+#             created_at TIMESTAMP DEFAULT NOW()
+#         );
+
+#     """)
+
+
+
+
+
+#     conn.commit()
+
+#     cur.close()
+#     conn.close()
+
+#     print("Tables created successfully.")
+
+# database/setup_database.py
+
+import psycopg2
+
+import config
+
+
+DB_NAME = "sms_progress_checker"
+
+
 def create_tables():
 
     conn = psycopg2.connect(
@@ -53,11 +184,15 @@ def create_tables():
         CREATE TABLE IF NOT EXISTS projects
         (
             id SERIAL PRIMARY KEY,
+
             project_name VARCHAR(255) NOT NULL,
-            overall_progress INTEGER DEFAULT 0,
-            current_phase VARCHAR(255),
-            status VARCHAR(50),
+
+            description TEXT,
+
+            repository_url TEXT NOT NULL,
+
             created_at TIMESTAMP DEFAULT NOW(),
+
             updated_at TIMESTAMP DEFAULT NOW()
         );
     """)
@@ -79,7 +214,7 @@ def create_tables():
 
             description TEXT,
 
-            progress INTEGER DEFAULT 0,
+            progress NUMERIC(5,2) DEFAULT 0,
 
             status VARCHAR(50) DEFAULT 'Not Started',
 
@@ -95,11 +230,32 @@ def create_tables():
     """)
 
     # ---------------------------------------------------------
-    # project_milestones
+    # project_git_status
     # ---------------------------------------------------------
 
     cur.execute("""
-        CREATE TABLE IF NOT EXISTS project_milestones
+        CREATE TABLE IF NOT EXISTS project_git_status
+        (
+            project_id INTEGER PRIMARY KEY
+                REFERENCES projects(id)
+                ON DELETE CASCADE,
+
+            branch VARCHAR(100) DEFAULT 'master',
+
+            last_processed_commit VARCHAR(40),
+
+            last_checked_at TIMESTAMP,
+
+            updated_at TIMESTAMP DEFAULT NOW()
+        );
+    """)
+
+    # ---------------------------------------------------------
+    # project_commits
+    # ---------------------------------------------------------
+
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS project_commits
         (
             id SERIAL PRIMARY KEY,
 
@@ -107,45 +263,30 @@ def create_tables():
                 REFERENCES projects(id)
                 ON DELETE CASCADE,
 
-            milestone_name VARCHAR(255) NOT NULL,
+            commit_hash VARCHAR(40) NOT NULL UNIQUE,
 
-            description TEXT,
+            author VARCHAR(255),
 
-            status VARCHAR(50) DEFAULT 'Pending',
+            commit_message TEXT,
 
-            due_date DATE,
+            commit_date TIMESTAMP,
 
-            completed_at TIMESTAMP,
-
-            updated_at TIMESTAMP DEFAULT NOW()
+            created_at TIMESTAMP DEFAULT NOW()
         );
     """)
 
     # ---------------------------------------------------------
-    # project_git_status
+    # Indexes
     # ---------------------------------------------------------
 
     cur.execute("""
-        CREATE TABLE IF NOT EXISTS project_git_status
-        (
-            id SERIAL PRIMARY KEY,
+        CREATE INDEX IF NOT EXISTS idx_project_commits_project
+        ON project_commits(project_id);
+    """)
 
-            project_id INTEGER NOT NULL UNIQUE
-                REFERENCES projects(id)
-                ON DELETE CASCADE,
-
-            repository_url TEXT,
-
-            branch VARCHAR(100) DEFAULT 'main',
-
-            last_processed_commit VARCHAR(64),
-
-            last_checked_at TIMESTAMP,
-
-            created_at TIMESTAMP DEFAULT NOW(),
-
-            updated_at TIMESTAMP DEFAULT NOW()
-        );
+    cur.execute("""
+        CREATE INDEX IF NOT EXISTS idx_project_modules_project
+        ON project_modules(project_id);
     """)
 
     conn.commit()
@@ -155,10 +296,37 @@ def create_tables():
 
     print("Tables created successfully.")
 
+def drop_all_tables():
+
+    conn = psycopg2.connect(
+        host=config.db_host,
+        port=config.db_port,
+        database=DB_NAME,
+        user=config.db_user,
+        password=config.db_password
+    )
+
+    conn.set_session(autocommit=True)
+
+    cur = conn.cursor()
+
+    cur.execute("""
+        DROP SCHEMA public CASCADE;
+        CREATE SCHEMA public;
+    """)
+
+    cur.close()
+    conn.close()
+
+    print("All database objects deleted successfully.")
+
+
 
 if __name__ == "__main__":
 
-    create_database()
+    # drop_all_tables()
+
+    # create_database()
 
     create_tables()
 
