@@ -58,24 +58,30 @@ def get_git_status(project_id):
     conn = get_connection()
 
     try:
+
         cur = conn.cursor()
 
         cur.execute("""
             SELECT
                 branch,
-                last_processed_commit
+                last_processed_commit,
+                last_checked_at
             FROM project_git_status
             WHERE project_id = %s
         """, (project_id,))
 
         row = cur.fetchone()
 
-        if not row:
+        if row is None:
             return None
 
         return {
             "branch": row[0],
-            "last_processed_commit": row[1]
+            "last_processed_commit": row[1],
+            "last_checked_at": (
+                row[2].isoformat()
+                if row[2] else None
+            )
         }
 
     finally:
@@ -127,118 +133,177 @@ def initialize_git_tracking(project_id, branch, initial_commit_hash):
         conn.close()
 
 
-def update_last_processed_commit(project_id, commit_hash):
 
-    conn = get_connection()
+def update_git_status(project_id, last_processed_commit):
 
     try:
 
+        conn = get_connection()
+
         cur = conn.cursor()
 
-        cur.execute("""
+        cur.execute(
+            """
             UPDATE project_git_status
             SET
                 last_processed_commit = %s,
-                last_checked_at = NOW(),
-                updated_at = NOW()
+                last_checked_at = NOW()
             WHERE project_id = %s
-        """,
-        (
-            commit_hash,
-            project_id
-        ))
+            """,
+            (
+                last_processed_commit,
+                project_id
+            )
+        )
 
         conn.commit()
+
+        return {"success": True}
+
+    except Exception as e:
+
+        conn.rollback()
+
+        return {
+            "success": False,
+            "error": str(e)
+        }
 
     finally:
 
         cur.close()
         conn.close()
 
+# def update_project_analysis(
+#         project_id,
+#         analysis,
+#         latest_commit,
+#         commits
+#     ):
 
-def update_project_analysis(
-        project_id,
-        analysis,
-        latest_commit,
-        commits
-    ):
-
-        conn = get_connection()
-
-
-        try:
-
-            cur = conn.cursor()
-
-            modules = analysis.get("modules", [])
+#         conn = get_connection()
 
 
-            for module in modules:
+#         try:
 
-                status = normalize_status(
-                            module["status"]
-                        )
+#             cur = conn.cursor()
 
-                cur.execute("""
-                    UPDATE project_modules
-                    SET
-                        status = %s,
-                        progress = %s,
-                        updated_at = NOW()
-                    WHERE
-                        project_id = %s
-                    AND
-                        module_name = %s
-                """,
-                (
-                    status,
-                    module["progress"],
-                    project_id,
-                    module["module_name"]
-                ))
-
-                print("Rows updated:", cur.rowcount)
-                print(repr(module["module_name"]))
-
-            # update overall progress
-
-            overall_progress = calculate_overall_progress(modules)
-
-            if commits:
-                save_commits(
-                    cur,
-                    project_id,
-                    commits
-                )
-
-            conn.commit()
-
-            # after successful DB update
-            if commits:
-                update_last_processed_commit(
-                    project_id,
-                    latest_commit
-                )
-
-            return {
-                "success": True
-            }
+#             modules = analysis.get("modules", [])
 
 
-        except Exception as e:
+#             for module in modules:
 
-            conn.rollback()
+#                 status = normalize_status(
+#                             module["status"]
+#                         )
 
-            return {
-                "success": False,
-                "error": str(e)
-            }
+#                 cur.execute("""
+#                     UPDATE project_modules
+#                     SET
+#                         status = %s,
+#                         progress = %s,
+#                         updated_at = NOW()
+#                     WHERE
+#                         project_id = %s
+#                     AND
+#                         module_name = %s
+#                 """,
+#                 (
+#                     status,
+#                     module["progress"],
+#                     project_id,
+#                     module["module_name"]
+#                 ))
+
+#                 print("Rows updated:", cur.rowcount)
+#                 print(repr(module["module_name"]))
+
+#             # update overall progress
+
+#             overall_progress = calculate_overall_progress(modules)
+
+#             conn.commit()
+
+#             return {
+#                 "success": True
+#             }
 
 
-        finally:
+#         except Exception as e:
 
-            cur.close()
-            conn.close()
+#             conn.rollback()
+
+#             return {
+#                 "success": False,
+#                 "error": str(e)
+#             }
+
+
+#         finally:
+
+#             cur.close()
+#             conn.close()
+
+def update_project_analysis(project_id, analysis):
+
+    conn = get_connection()
+
+    try:
+        cur = conn.cursor()
+
+        modules = analysis.get("modules", [])
+
+        for module in modules:
+
+            status = normalize_status(module["status"])
+
+            cur.execute("""
+                UPDATE project_modules
+                SET
+                    status = %s,
+                    progress = %s,
+                    updated_at = NOW()
+                WHERE
+                    project_id = %s
+                AND
+                    module_name = %s
+            """, (
+                status,
+                module["progress"],
+                project_id,
+                module["module_name"]
+            ))
+
+        # overall_progress = calculate_overall_progress(modules)
+
+        # cur.execute("""
+        #     UPDATE projects
+        #     SET
+        #         overall_progress = %s,
+        #         updated_at = NOW()
+        #     WHERE id = %s
+        # """, (
+        #     overall_progress,
+        #     project_id
+        # ))
+
+        conn.commit()
+
+        return {"success": True}
+
+    except Exception as e:
+
+        conn.rollback()
+
+        return {
+            "success": False,
+            "error": str(e)
+        }
+
+    finally:
+
+        cur.close()
+        conn.close()
 
 def calculate_overall_progress(modules):
     """
@@ -298,7 +363,11 @@ def save_commits(
         Existing commits are ignored.
         """
 
+        print(f"saving commits: ...")
+
         for commit in commits:
+
+            print("Saving: ", commit)
 
             cur.execute(
                 """
@@ -329,6 +398,9 @@ def save_commits(
                     commit["commit_message"]
                 )
             )
+            print("Rows inserted: ", cur.rowcount)
+
+        print(f"Inserted: ", commit['commit_hash'])
 
 def get_project_modules(project_id):
 
@@ -441,7 +513,7 @@ def get_last_commit(project_id):
             FROM project_commits
             WHERE project_id = %s
             ORDER BY commit_date DESC
-            LIMIT 1
+            LIMIT 5
             """,
             (project_id,)
         )
@@ -463,57 +535,54 @@ def get_last_commit(project_id):
         cur.close()
         conn.close()
 
-def get_last_commit(project_id):
-    """
-    Return the latest commit for the given project.
+def run_git(self, args):
+    result = subprocess.run(
+        ["git", "-C", str(self.project_path)] + args,
+        capture_output=True,
+        text=True,
+        check=True
+    )
 
-    Args:
-        project_id (int): Project ID.
+    return result.stdout.strip()
 
-    Returns:
-        dict | None
-    """
+def get_latest_commit(self):
 
-    conn = get_connection()
+    output = self.run_git([
+        "log",
+        "-1",
+        "--pretty=format:%H|%an|%aI|%s"
+    ])
 
-    try:
+    commit_hash, author, date, message = output.split("|", 3)
 
-        cur = conn.cursor()
-
-        cur.execute(
-            """
-            SELECT
-                commit_hash,
-                author,
-                commit_date,
-                commit_message
-            FROM project_commits
-            WHERE project_id = %s
-            ORDER BY commit_date DESC
-            LIMIT 1
-            """,
-            (project_id,)
-        )
-
-        row = cur.fetchone()
-
-        if row is None:
-            return None
-
-        return {
-            "commit_hash": row[0],
-            "author": row[1],
-            "commit_date": (
-                row[2].isoformat()
-                if row[2]
-                else None
-            ),
-            "commit_message": row[3]
+    return {
+        "success": True,
+        "commit": {
+            "commit_hash": commit_hash,
+            "author": author,
+            "commit_date": date,
+            "commit_message": message
         }
+    }
 
-    finally:
+def get_changed_files(self, commit_hash="HEAD"):
 
-        cur.close()
-        conn.close()
+    output = self.run_git([
+        "diff-tree",
+        "--no-commit-id",
+        "--name-only",
+        "-r",
+        commit_hash
+    ])
+
+    return {
+        "success": True,
+        "commit_hash": commit_hash,
+        "files": [
+            line
+            for line in output.splitlines()
+            if line.strip()
+        ]
+    }
 
 

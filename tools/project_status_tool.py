@@ -1,8 +1,10 @@
 #tools/project_status_tool.py
 from database.db_utils import (
-    calculate_overall_progress,
     get_project,
     get_project_modules,
+    calculate_overall_progress,
+    get_last_commit,
+    get_git_status
 )
 from tools.base_tool import BaseTool
 
@@ -29,6 +31,10 @@ class ProjectStatusTool(BaseTool):
 
         project["overall_progress"] = calculate_overall_progress(modules)
 
+        git_status = get_git_status(project['id'])
+
+        last_commit = get_last_commit(project["id"])
+
         project["created_at"] = (
             project["created_at"].isoformat()
             if project["created_at"] else None
@@ -43,7 +49,9 @@ class ProjectStatusTool(BaseTool):
             "success": True,
             "data": {
                 "project_info": project,
-                "modules": modules
+                "modules": modules,
+                "git_status" : git_status,
+                "last_commit": last_commit
             }
         }
 

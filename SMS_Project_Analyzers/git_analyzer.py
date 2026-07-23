@@ -24,6 +24,8 @@ class GitAnalyzer:
             processed commit stored in the database.
             """
 
+            print("=== GIT ANALYZER VERSION 123 ===")
+
             project_path = Path(SMS_PROJECT_PATH)
 
             try:
@@ -38,6 +40,11 @@ class GitAnalyzer:
 
                 branch = git_status["branch"]
                 last_processed_commit = git_status["last_processed_commit"]
+
+                print("=" * 40)
+                print("DB COMMIT:", repr(last_processed_commit))
+                print("LATEST   :", repr(latest_commit) if 'latest_commit' in locals() else "not computed")
+                print("=" * 40)
 
                 subprocess.run(
                     [
@@ -67,6 +74,10 @@ class GitAnalyzer:
 
                 latest_commit = result.stdout.strip()
 
+                print("DB:", repr(last_processed_commit))
+                print("LATEST:", repr(latest_commit))
+                print("EQUAL?", last_processed_commit == latest_commit)
+                
                 # First run
                 if last_processed_commit is None:
 
@@ -75,6 +86,8 @@ class GitAnalyzer:
                         "",
                         latest_commit
                     )
+
+                    print(f"First Run Commits: {commits} \n {len(commits) if commits else 0}")
 
                     result = subprocess.run(
                         [
@@ -123,6 +136,15 @@ class GitAnalyzer:
                     last_processed_commit,
                     latest_commit
                 )
+
+                print("DB:", last_processed_commit)
+                print("Latest:", latest_commit)
+                print(f"First Run Commits: {commits}")
+
+
+                print("First Run Commits:")
+                print(commits)
+                print("Count:", len(commits))
 
                 return {
                     "success": True,
@@ -240,6 +262,38 @@ class GitAnalyzer:
                 check=True
             )
 
-    
+
+            print("Running command:")
+            print(cmd)
+
+            print("stdout:")
+            print(result.stdout)
+
+            print("stderr:")
+            print(result.stderr)
+
+            commits = []
+
+            for line in result.stdout.splitlines():
+
+                if not line.strip():
+                    continue
+
+                parts = line.split('|', 3)
+
+                if len(parts) != 4:
+                    continue
+
+                commit_hash, author, commit_date, commit_message = parts
+
+                commits.append({
+                    "commit_hash" : commit_hash,
+                    "author" : author,
+                    "commit_date" : commit_date,
+                    "commit_message" : commit_message
+                })
+
+            return commits
+
 
 

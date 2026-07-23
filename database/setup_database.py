@@ -161,7 +161,7 @@ import psycopg2
 import config
 
 
-DB_NAME = "sms_progress_checker"
+DB_NAME = config.db_name
 
 
 def create_tables():
@@ -328,6 +328,6 @@ if __name__ == "__main__":
 
     # create_database()
 
-    create_tables()
+    # create_tables()
 
     print("Database setup completed successfully.")

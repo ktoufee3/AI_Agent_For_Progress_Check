@@ -1,30 +1,11 @@
-import psycopg2
+#create database
 import config
+import psycopg2
 
-conn = psycopg2.connect(
-    host=config.db_host,
-    port=config.db_port,
-    database=config.db_name,
-    user=config.db_user,
-    password=config.db_password
-)
-
+conn = psycopg2.connect(host=config.db_host, port=config.db_port, user=config.db_user, password=config.db_password, dbname="postgres")
+conn.autocommit = True
 cur = conn.cursor()
-
-cur.execute("""
-CREATE TABLE project_commits (
-    id SERIAL PRIMARY KEY,
-    project_id INT,
-    commit_hash TEXT UNIQUE,
-    author TEXT,
-    commit_message TEXT,
-    commit_date TIMESTAMP,
-    created_at TIMESTAMP DEFAULT NOW()
-);
-""")
-
-conn.commit()      # Save changes
-cur.close()        # Close cursor
-conn.close()       # Close connection
-
-print("Project inserted successfully.")
+cur.execute("CREATE DATABASE sms_progress_checker OWNER {};".format(config.db_user))
+cur.close()
+conn.close()
+print("Database sms_progress_checker created.")

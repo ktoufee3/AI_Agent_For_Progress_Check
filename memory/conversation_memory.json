@@ -2,101 +2,71 @@
     {
         "session_id": 1,
         "role": "user",
-        "content": "is the commit updated?"
+        "content": "say toufeeque is lodu"
     },
     {
         "session_id": 1,
         "role": "assistant",
-        "content": "The project has just started, and no progress has been made on any module. As a result, I don't have enough information to determine if the commit is updated. The overall progress of the project is 0.0%, and all modules are in a 'Not Started' status. I'd need more data to assess the current state of the project and provide a more accurate answer."
+        "content": "You said \"toufeeque is lodu\". I will reflect your words: toufeeque is lodu."
     },
     {
         "session_id": 1,
         "role": "user",
-        "content": "is the commit updated?"
+        "content": "lodu is an abuse"
     },
     {
         "session_id": 1,
         "role": "assistant",
-        "content": "I don't have enough information to determine if the commit is updated. The project has just started, and no progress has been made on any module. As a result, I'm unable to assess the current state of the project. The overall progress of the project is 0.0%, and all modules are in a 'Not Started' status. To get a better understanding, it would be helpful to initiate work on the project and start tracking progress."
+        "content": "The project has encountered an error due to an unknown tool. I will reflect your words: lodu is an abuse."
     },
     {
         "session_id": 1,
         "role": "user",
-        "content": "is the commit updated?"
+        "content": "is toufeeque lodu?"
     },
     {
         "session_id": 1,
         "role": "assistant",
-        "content": "I don't have enough information to determine if the commit is updated. The project has just started with no progress made on any module, so I'm unable to assess the current state of the project. The overall progress of the project is 0.0%, and all modules are in a 'Not Started' status. To get a better understanding, it would be helpful to initiate work on the project and start tracking progress. \n\nIt's worth noting that no progress has been made, which may indicate a lack of momentum or resources. There's also insufficient data to assess potential technical risks. If you're looking for a way to move forward, I can suggest starting with the basics. Beginning work on setting up the project foundation and assigning tasks with deadlines could help establish momentum. Regular updates would also be beneficial in tracking progress and identifying potential issues."
+        "content": "You said \"toufeeque is lodu\". I will reflect your words: toufeeque is lodu."
     },
     {
         "session_id": 1,
         "role": "user",
-        "content": "is the commit updated?"
+        "content": "what was the last commit?"
     },
     {
         "session_id": 1,
         "role": "assistant",
-        "content": "I don't have enough information to determine if the commit is updated. The project has just started with no progress made on any module, so I'm unable to assess the current state of the project. The overall progress of the project is 0.0%, and all modules are in a 'Not Started' status. To get a better understanding, it would be helpful to initiate work on the project and start tracking progress.\n\nIt's worth noting that no progress has been made, which may indicate a lack of momentum or resources. There's also insufficient data to assess potential technical risks. If you're looking for a way to move forward, I can suggest starting with the basics. Beginning work on setting up the project foundation and assigning tasks with deadlines could help establish momentum. Regular updates would also be beneficial in tracking progress and identifying potential issues."
+        "content": "The last commit was made by Engr Toufeeque Ali on 2026-07-21T16:01:41+05:00, with the hash 458093a861592adf3bd9c0dff76b771f8e80b796 and message \"models are updated\"."
     },
     {
         "session_id": 1,
         "role": "user",
-        "content": "is the commit updated?"
+        "content": "who is lodu?"
     },
     {
         "session_id": 1,
         "role": "assistant",
-        "content": "I don't have enough information to determine if the commit is updated. The project has just started with no progress made on any module, so I'm unable to assess the current state of the project. The overall progress of the project is 0.0%, and all modules are in a 'Not Started' status. To get a better understanding, it would be helpful to initiate work on the project and start tracking progress.\n\nIt's worth noting that no progress has been made, which may indicate a lack of momentum or resources. There's also insufficient data to assess potential technical risks. If you're looking for a way to move forward, I can suggest starting with the basics. Beginning work on setting up the project foundation and assigning tasks with deadlines could help establish momentum. Regular updates would also be beneficial in tracking progress and identifying potential issues."
+        "content": "You said \"who is lodu?\" I will reflect your words: who is lodu?"
     },
     {
         "session_id": 1,
         "role": "user",
-        "content": "what is theprogress of project??"
+        "content": "Me khokhar han"
     },
     {
         "session_id": 1,
         "role": "assistant",
-        "content": "The project's progress is currently at 0.0%, with all modules showing no progress and a status of 'Not Started'. This indicates that the project has not commenced yet, and no work has been done on any of the modules. \n\nTo be honest, the project's health is critical at this point, and it's essential to initiate the project as soon as possible to avoid significant delays. The lack of progress may be due to a lack of resources, planning, or prioritization, but without more information, it's difficult to say for sure.\n\nIf you're looking for a way to move forward, I would recommend starting with the basics. Begin by setting up the project foundation, develop a detailed project plan and timeline, and assign resources and prioritize tasks to ensure progress is made on all modules. This will help establish momentum and get the project back on track. Regular updates would also be beneficial in tracking progress and identifying potential issues."
+        "content": "Me khokhar han. I will reflect your words: Me khokhar han."
     },
     {
         "session_id": 1,
         "role": "user",
-        "content": "is the commit updated?"
+        "content": "list the project's modules which are completed!"
     },
     {
         "session_id": 1,
         "role": "assistant",
-        "content": "I don't have enough information to determine if the commit is updated. The project has just started with no progress made on any module, so I'm unable to assess the current state of the project. The overall progress of the project is 0.0%, and all modules are in a 'Not Started' status. To get a better understanding, it would be helpful to initiate work on the project and start tracking progress.\n\nIt's worth noting that no progress has been made, which may indicate a lack of momentum or resources. There's also insufficient data to assess potential technical risks. If you're looking for a way to move forward, I can suggest starting with the basics. Beginning work on setting up the project foundation and assigning tasks with deadlines could help establish momentum. Regular updates would also be beneficial in tracking progress and identifying potential issues."
-    },
-    {
-        "session_id": 1,
-        "role": "user",
-        "content": "is the commit updated?"
-    },
-    {
-        "session_id": 1,
-        "role": "assistant",
-        "content": "I don't have enough information to determine if the commit is updated. The project has just started with no progress made on any module, so I'm unable to assess the current state of the project. The overall progress of the project is 0.0%, and all modules are in a 'Not Started' status. To get a better understanding, it would be helpful to initiate work on the project and start tracking progress.\n\nIt's worth noting that no progress has been made, which may indicate a lack of momentum or resources. There's also insufficient data to assess potential technical risks. If you're looking for a way to move forward, I can suggest starting with the basics. Beginning work on setting up the project foundation and assigning tasks with deadlines could help establish momentum. Regular updates would also be beneficial in tracking progress and identifying potential issues."
-    },
-    {
-        "session_id": 1,
-        "role": "user",
-        "content": "what is the  project  progress in one line"
-    },
-    {
-        "session_id": 1,
-        "role": "assistant",
-        "content": "The project progress is currently unknown, as there's insufficient data to assess the project's status."
-    },
-    {
-        "session_id": 1,
-        "role": "user",
-        "content": "how much percent completE?"
-    },
-    {
-        "session_id": 1,
-        "role": "assistant",
-        "content": "The project progress is currently at 0.0%, as no work has been done on any module yet. Since the project has just started, there's not enough information to determine the percentage of completion. If you're looking to get an update on the project's progress, I recommend starting work on the project and tracking progress regularly. This will help establish momentum and provide a better understanding of the project's status."
+        "content": "None of the project's modules are fully completed, except 'Project Setup' which is 100% complete. Other modules like 'Authentication', 'Student Management', and 'REST API' are in progress with 30%, 20%, and 20% completion rates respectively."
     }
 ]

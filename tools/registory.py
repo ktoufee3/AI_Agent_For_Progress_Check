@@ -1,9 +1,11 @@
 from tools.project_status_tool import ProjectStatusTool
 from tools.project_analyzer_tool import ProjectAnalyzerTool
+from tools.git_history_tool import GitHistoryTool
 
 TOOL_REGISTRY = {
     ProjectStatusTool.name: ProjectStatusTool(),
-    ProjectAnalyzerTool.name: ProjectAnalyzerTool()
+    ProjectAnalyzerTool.name: ProjectAnalyzerTool(),
+    # GitHistoryTool.name: GitHistoryTool()
 }
 
 

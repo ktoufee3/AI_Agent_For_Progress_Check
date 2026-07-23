@@ -79,9 +79,10 @@ class Agent:
         # ----------------------------
 
         answer = self.response_generator.generate(
-            user_question,
-            history,
-            reasoning
+            user_question=user_question,
+            history=history,
+            tool_result=tool_result,
+            reasoning=reasoning,
         )
 
         # ----------------------------

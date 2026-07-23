@@ -80,14 +80,33 @@ def check_data_in_table():
     cur = conn.cursor()
 
     try:
+
         cur.execute("""
-        SELECT *
-        FROM project_git_status;
+            SELECT column_name
+            FROM information_schema.columns
+            WHERE table_name='projects';
+        """)
+
+        columns_names = cur.fetchall()
+        print(f"columns_names: {columns_names}")
+
+        cur.execute("""
+        SELECT * from project_commits;
         """)
 
         columns_data = cur.fetchall()
 
-        print(columns_data)
+        print("commits data in project_commits: ", columns_data)
+
+
+        cur.execute("""
+            select * from project_git_status;
+        """)
+
+
+        git_status = cur.fetchall()
+        print("git_status: ", git_status)
+
 
     except Exception as e:
         pass
