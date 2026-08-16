@@ -68,5 +68,35 @@
         "session_id": 1,
         "role": "assistant",
         "content": "None of the project's modules are fully completed, except 'Project Setup' which is 100% complete. Other modules like 'Authentication', 'Student Management', and 'REST API' are in progress with 30%, 20%, and 20% completion rates respectively."
+    },
+    {
+        "session_id": 1,
+        "role": "user",
+        "content": "what is the progress of the project"
+    },
+    {
+        "session_id": 1,
+        "role": "assistant",
+        "content": "The project is 7.08% complete, with 3 modules in progress and 8 not started. The \"Project Setup\" module is 50% complete, while \"Authentication\" and \"REST API\" are 20% and 5% complete, respectively."
+    },
+    {
+        "session_id": 1,
+        "role": "user",
+        "content": "what is the progress of the project?"
+    },
+    {
+        "session_id": 1,
+        "role": "assistant",
+        "content": "The project is 7.08% complete, with 4 modules in progress and 8 not started. The \"Project Setup\", \"Authentication\", \"Student Management\", and \"REST API\" modules are 50%, 20%, 10%, and 5% complete, respectively."
+    },
+    {
+        "session_id": 1,
+        "role": "user",
+        "content": "who is the developer of this project?"
+    },
+    {
+        "session_id": 1,
+        "role": "assistant",
+        "content": "The author of this project is Engr Toufeeque Ali."
     }
 ]

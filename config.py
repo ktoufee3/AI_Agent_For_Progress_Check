@@ -28,9 +28,7 @@ API_PORT=int(os.getenv("API_PORT"))
 CONVERSATION_MEMORY_FILE = "memory/conversation_memory.json"
 
 # Path to the Django Student Management System project
-# SMS_PROJECT_PATH = r"F:\BecomeDataScientist\Student_Management_System"
-
-SMS_PROJECT_PATH = r"/home/toufeeque/Downloads/Student_Management_System/Student_Management_System"
+SMS_PROJECT_PATH = os.getenv("SMS_PROJECT_PATH", "SMS_PROJECT")
 
 
 # Files to ignore during code analysis
