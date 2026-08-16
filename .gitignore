@@ -2,3 +2,5 @@ __pycache__/
 venv/
 .env
 conversation_memory.json
+seed_modules.py
+seed_modules.py
